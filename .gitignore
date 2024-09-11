@@ -1,0 +1,10 @@
+.DS_Store
+/*.code-workspace
+/build-scripts/common-utils/
+/build-scripts/git/
+/build-scripts/neofetch/
+/build-scripts/neovim/
+/build-scripts/pandoc/
+/build-scripts/quarto-cli/
+/build-scripts/rstudio-server/
+/build-scripts/tmux/

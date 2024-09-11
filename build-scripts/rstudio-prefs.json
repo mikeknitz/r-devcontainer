@@ -1,0 +1,7 @@
+{
+  "show_doc_outline_rmd": true,
+  "save_workspace": "never",
+  "highlight_r_function_calls": true,
+  "syntax_color_console": true,
+  "posix_terminal_shell": "zsh"
+}
