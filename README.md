@@ -11,6 +11,8 @@ Pull container from Docker Hub
 docker pull knitz/r-devcontainer:r441-amd64-2024-09-09
 ```
 
+### From terminal
+
 Starting containers from image
 
 - `--name` = name of created container
@@ -65,19 +67,70 @@ docker run -it \
   knitz/r-devcontainer:r441-amd64-2024-09-09
 ```
 
+### From VS Code
+
+Using Dev Containers extension, add a `devcontainer.json` specification then VS Code command: `Dev Containers: Reopen in Container`, this should drop you in the container with the host's working directory mounted inside of `/workspaces`.
+
+``` bash
+# In project directory
+mkdir .devcontainer
+touch .devcontainer/devcontainer.json
+```
+
+`.devcontainer/devcontainer.json`
+
+- `name`: Name that appears in VS Code
+- `image`: image:tag to build container from
+- `runArgs`: The --name argument will appear in list of docker containers when running `docker ps -a`. Port mapping seems to be done automagically in VS Code but you can specify here e.g., if running in terminal outside of VS Code.
+- `customizations`: VS Code extensions to install by default inside of container
+- `mounts`: Bind mounts, in addition to working directory from host
+- `remoteUser`: User to connect as
+
+
+``` json
+{
+  "name": "name-of-container",
+  "image": "image:tag",
+  "runArgs": ["--name", "name-of-container-in-docker", "-p", "8787:8787"],
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": [
+        "reditorsupport.r",
+        "rdebugger.r-debugger"
+      ]
+    }
+  },
+  "mounts": [
+    {
+      "source": "/path/to/dir/on/host",
+      "target": "/path/to/dir/in/container",
+      "type": "bind"
+    }
+  ],
+  "remoteUser": "ubuntu"
+}
+```
+
 ## Available images
 
 - `knitz/r-devcontainer:r441-amd64-2024-09-09`
-  - Built on 2024-09-10
-  - Size: 5.33GB
-  - `start-rstudio` script starts rserver on port 8787
-  - Most packages dated to versions available on 2024-09-09
+  - Image built on 2024-09-10
+  - Architecture: `linux/amd64`
+  - OS: Ubuntu 22.04 (Jammy)
+  - R version: 4.4.1
+  - RSPM date: 2024-09-09
+  - Size (uncompressed): 5.33GB
+  - Commit: 1e4754f75517b315b7ab3f44623762aaa223d804
+  - `start-rstudio` starts rserver on port 8787
 
-## Build Documentation
+## Build documentation
 
-This container is based on `rocker/r-ver`: <https://rocker-project.org/images/versioned/r-ver.html> with Ubuntu 22.04 with R already built from source for `linux/amd64` or `linux/arm64` architecture.
+This section details build: `knitz/r-devcontainer:r441-amd64-2024-09-09`
 
-### devcontainer features
+This image is based on `rocker/r-ver`: <https://rocker-project.org/images/versioned/r-ver.html> with Ubuntu 22.04 with R already built from source for `linux/amd64` or `linux/arm64` architecture.
+
+### devcontainer Features
 
 I've made use of "devcontainer" features: <https://containers.dev/>. However, these are generally made to be installed over an image during container build. Instead, `build-scripts/pull-build-scripts.sh` is run before the `docker build` step to populate `build-scripts/` with code from several features, essentially baking these features into the image, rather than their intended use installing on the fly. The `Dockerfile` will then copy these scripts into the image during the build step and use them to build each feature.
 
@@ -116,8 +169,6 @@ For tags, I'm adding this info:
 ``` bash
 # Build
 docker build -t r-devcontainer:r441-amd64-2024-09-09 .
-docker tag r-devcontainer:r441-amd64-2024-09-09 <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
-docker push <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
 ```
 
 ### Push to Docker Hub
@@ -148,3 +199,19 @@ docker push <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
   - Install CRAN and Bioconductor packages (see `build-scripts/container-setup.sh`)
   - Import fonts to R with `extrafont` package: [CRAN: Package extrafont](https://cran.r-project.org/web/packages/extrafont/index.html)
 - End with `CMD ["/usr/bin/zsh"]` (configured as the non-root users's default shell)
+
+## TODO
+
+- [ ] Add `linux/arm64` architecture
+- [ ] Add logs to note final container specification
+- [ ] Document dotfile integration / installation from host
+- [ ] Document usage with devcontainer CLI
+- [ ] Document usage with Windows / WSL
+- [ ] Document usage with Singularity / Apptainer / HPC
+- [ ] Lock the last few R packages installed through GitHub to specific dates
+- [ ] Refactor build process to have configurable options so that images can easily be built on the fly
+- [ ] Add options for minimally sized container without devcontainer features baked in
+- [ ] Add options for R package installation
+- [ ] Add options for RStudio configuration
+- [ ] Add support for [renv](https://rstudio.github.io/renv/)
+- [ ] Add support for [shiny](https://shiny.posit.co/)
