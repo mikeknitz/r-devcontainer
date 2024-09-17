@@ -9,7 +9,7 @@ cd builds/r-devcontainer-r441-amd64-2024-09-09
 Populate `build-scripts/` directory with subdirectories containing installation code for devcontainer features
 
 ``` bash
-bash builds/r-devcontainer-r441-amd64-2024-09-09/build-scripts/pull-build-scripts.sh
+bash build-scripts/pull-build-scripts.sh
 ```
 
 Build Docker image
