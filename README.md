@@ -114,15 +114,7 @@ touch .devcontainer/devcontainer.json
 
 ## Available images
 
-- `knitz/r-devcontainer:r441-amd64-2024-09-09`
-  - Image built on 2024-09-10
-  - Architecture: `linux/amd64`
-  - OS: Ubuntu 22.04 (Jammy)
-  - R version: 4.4.1
-  - RSPM date: 2024-09-09
-  - Size (uncompressed): 5.33GB
-  - Commit: 1e4754f75517b315b7ab3f44623762aaa223d804
-  - `start-rstudio` starts rserver on port 8787
+- See [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
 
 ## Build documentation
 
