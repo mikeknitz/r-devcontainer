@@ -6,9 +6,13 @@ Documenting my Docker containers here for R development.
 
 ## Available images and usage
 
-- [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
-    - [knitz/r-devcontainer:r441-arm64-2024-09-18](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-arm64-2024-09-18)
-    - [knitz/r-devcontainer:r441-amd64-2024-09-09](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-09)
+- For Intel / AMD architecture, use a `amd64` image
+- For ARM or Apple Silicon architecture, use a `arm64` image
+
+[Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
+
+- [knitz/r-devcontainer:r441-arm64-2024-09-18](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-arm64-2024-09-18)
+- [knitz/r-devcontainer:r441-amd64-2024-09-09](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-09)
 
 <br>
 
