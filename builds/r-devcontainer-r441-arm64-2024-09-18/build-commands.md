@@ -15,15 +15,13 @@ bash build-scripts/pull-build-scripts.sh
 Build Docker image
 
 ``` bash
-docker build -t r-devcontainer:r441-amd64-2024-09-09 .
+docker build -t <docker-hub-username>/r-devcontainer:r441-arm64-2024-09-18 .
 ```
 
 Push to Docker Hub
 
 ``` bash
-docker login
-docker tag r-devcontainer:r441-amd64-2024-09-09 <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
-docker push <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
+docker push <docker-hub-username>/r-devcontainer:r441-arm64-2024-09-18
 ```
 
 ## Summary of build
@@ -33,13 +31,13 @@ docker push <docker-hub-username>/r-devcontainer:r441-amd64-2024-09-09
 - Copy `build-scripts/` to `/tmp/build-scripts/` inside the image
 - Run devcontainer feature scripts as the root user
 - Copy in files and configs:
-  - A helper script `start-rstudio` to launch a RStudio Server instance
+  - Helper scripts `start-rstudio` and `copy-code-workspace`
   - `.lintr`, `.Rprofile`, `.zshrc`, `rstudio-prefs.json`
 - Install:
   - TinyTeX (through <https://yihui.org/tinytex/>)
   - Chromium (through `quarto install`)
 - Run `container-setup.sh`:
-  - Install system dependencies with `apt-get`
+  - Install system dependencies and software with `apt-get`
   - Install radian terminal [GitHub - randy3k/radian: A 21 century R console](https://github.com/randy3k/radian)
   - Install and configure fonts with `ttf-mscorefonts-installer` <https://packages.debian.org/sid/fonts/ttf-mscorefonts-installer>
   - Install CRAN and Bioconductor packages (see `build-scripts/container-setup.sh`)

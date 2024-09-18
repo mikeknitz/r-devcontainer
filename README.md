@@ -6,8 +6,8 @@ Documenting my Docker containers here for R development.
 
 ## Available images and usage
 
-- See [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
-- Usage for latest build: [knitz/r-devcontainer:r441-amd64-2024-09-09](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-09)
+- [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
+    - [knitz/r-devcontainer:r441-amd64-2024-09-09](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-09)
 
 <br>
 
@@ -42,8 +42,8 @@ This script pulls from the respective GitHub repositories, and the features are 
 For Docker tags, I'm adding this info:
 
 - R version: e.g., r441 for R 4.4.1. These are limited to what I'm able to pull from `rocker/r-ver`.
-- Platform: Until I figure out making any images cross-platform, I'm adding either amd64 or arm64 corresponding to the architecture (only these two are available in `rocker/r-ver`).
-- Dates: corresponding to availability from Posit Package Manger for CRAN and Bioconductor packages. These lock in package versions to those that were available on a certain date. Currently I have R packages `httpgd` ([GitHub - nx10/httpgd: Asynchronous http server graphics device for R.](https://github.com/nx10/httpgd)) and `presto` ([GitHub - immunogenomics/presto: Fast Wilcoxon and auROC](https://github.com/immunogenomics/presto)) as just installing the latest version, not from a specific date.
+- Platform: Either amd64 or arm64 corresponding to the architecture (only these two are available in `rocker/r-ver`).
+- Dates: corresponding to availability from Posit Package Manger for CRAN and Bioconductor packages. These lock in package versions to those that were available on a certain date.
 
 <br>
 
@@ -60,6 +60,7 @@ For Docker tags, I'm adding this info:
 - [x] Lock the last few R packages installed through GitHub to specific commits
 - [ ] Refactor build process to have configurable options
 - [ ] Add options for minimally sized container to run a script non-interactively
+- [ ] Try to optimize container size a bit anyway otherwise
 - [ ] Add options for R package installation
 - [ ] Add options for RStudio configuration
 - [ ] Add options/support for [renv](https://rstudio.github.io/renv/)

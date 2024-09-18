@@ -44,8 +44,8 @@ sudo apt-get install -y libglpk-dev
 sudo apt-get install -y libhdf5-dev
 
 # Magick, helps for R magick and ggkegg packages
-sudo apt-get install imagemagick     
-sudo apt-get install libmagick++-dev 
+sudo apt-get install -y imagemagick     
+sudo apt-get install -y libmagick++-dev 
 
 # R packages
 
