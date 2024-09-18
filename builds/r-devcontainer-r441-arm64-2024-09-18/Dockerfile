@@ -63,9 +63,12 @@ RUN VERSION="daily" \
     USERNAME="ubuntu" \
     /bin/bash install.sh
 
-# Add the start script
+# Add scripts
+# start-rstudio
 RUN /bin/bash -c "cp /tmp/build-scripts/start-rstudio /usr/local/bin/start-rstudio"
 RUN /bin/bash -c "chmod 777 /usr/local/bin/start-rstudio"
+RUN /bin/bash -c "cp /tmp/build-scripts/copy-code-workspace /usr/local/bin/copy-code-workspace"
+RUN /bin/bash -c "chmod 777 /usr/local/bin/copy-code-workspace"
 
 # Change to non-root user
 USER ubuntu

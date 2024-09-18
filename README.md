@@ -47,6 +47,8 @@ For Docker tags, I'm adding this info:
 
 <br>
 
+<!--
+
 ## TODO
 
 - [ ] Add `linux/arm64` architecture
@@ -55,10 +57,12 @@ For Docker tags, I'm adding this info:
 - [ ] Document usage with devcontainer CLI
 - [ ] Document usage with Windows / WSL
 - [ ] Document usage with Singularity / Apptainer / HPC
-- [ ] Lock the last few R packages installed through GitHub to specific dates
-- [ ] Refactor build process to have configurable options so that images can easily be built on the fly
-- [ ] Add options for minimally sized container without devcontainer features baked in
+- [x] Lock the last few R packages installed through GitHub to specific commits
+- [ ] Refactor build process to have configurable options
+- [ ] Add options for minimally sized container to run a script non-interactively
 - [ ] Add options for R package installation
 - [ ] Add options for RStudio configuration
 - [ ] Add options/support for [renv](https://rstudio.github.io/renv/)
 - [ ] Add options/support for [shiny](https://shiny.posit.co/)
+
+-->

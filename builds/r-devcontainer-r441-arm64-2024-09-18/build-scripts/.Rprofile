@@ -1,9 +1,9 @@
 # Bioconductor mirror
-options(BioC_mirror = "https://packagemanager.posit.co/bioconductor/2024-09-09")
-options(BIOCONDUCTOR_CONFIG_FILE = "https://packagemanager.posit.co/bioconductor/2024-09-09/config.yaml")
+options(BioC_mirror = "https://packagemanager.posit.co/bioconductor/2024-09-18")
+options(BIOCONDUCTOR_CONFIG_FILE = "https://packagemanager.posit.co/bioconductor/2024-09-18/config.yaml")
 
 # CRAN mirror
-options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/jammy/2024-09-09"))
+options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/jammy/2024-09-18"))
 
 # For use with VSCode
 # Helpful info / inspiration: https://renkun.me/2020/04/14/writing-r-in-vscode-working-with-multiple-r-sessions/

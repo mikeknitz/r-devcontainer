@@ -1,5 +1,6 @@
 .DS_Store
 /*.code-workspace
+/.commit.md
 **/build-scripts/common-utils/
 **/build-scripts/git/
 **/build-scripts/neofetch/
