@@ -9,7 +9,6 @@ Documenting my Docker containers here for R development.
 - Images without `amd64` or `arm64` are cross platform for either architecture
 - For Intel / AMD architecture, use `amd64`
 - For ARM or Apple Silicon architecture, use `arm64`
-- Currently `knitz/r441:latest` is same as `knitz/r-devcontainer:r441-2024-09-23`
 
 [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
 
