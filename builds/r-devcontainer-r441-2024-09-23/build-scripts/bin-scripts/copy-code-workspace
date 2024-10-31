@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+# If <parent-dir-template>.code-workspace does not exist in the
+# current directory, add a template file
+
+PARENT_DIR_TEMPLATE="$(basename "$PWD" | perl -pe 's/ /-/g')"
+WSFILE="${PARENT_DIR_TEMPLATE}.code-workspace"
+
+if [ -f "$WSFILE" ]; then
+
+  echo "File '$WSFILE' already exists."
+
+else
+
+  cat <<EOF > "$WSFILE"
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "window.zoomLevel": 0
+  }
+}
+EOF
+
+  echo "File '$WSFILE' created successfully."
+
+fi

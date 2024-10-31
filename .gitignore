@@ -9,3 +9,5 @@
 **/build-scripts/quarto-cli/
 **/build-scripts/rstudio-server/
 **/build-scripts/tmux/
+/builds/r441-latest/
+/builds/rsync/
