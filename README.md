@@ -6,12 +6,13 @@ Documenting my Docker containers here for R development.
 
 ## Available images and usage
 
-- Images without `amd64` or `arm64` are cross platform for either architecture
+- Images without `amd64` or `arm64` in the tag are cross platform for either architecture
 - For Intel / AMD architecture, use `amd64`
 - For ARM or Apple Silicon architecture, use `arm64`
 
 [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
 
+- [knitz/r-devcontainer:r441-2024-10-25](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-2024-10-25)
 - [knitz/r-devcontainer:r441-2024-09-23](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-2024-09-23)
 - [knitz/r-devcontainer:r441-amd64-2024-09-18](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-18)
 - [knitz/r-devcontainer:r441-arm64-2024-09-18](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-arm64-2024-09-18)
@@ -49,7 +50,7 @@ This script pulls from the respective GitHub repositories, and the features are 
 
 For Docker tags, I'm adding this info:
 
-- R version: e.g., r441 for R 4.4.1. These are limited to what I'm able to pull from `rocker/r-ver`.
+- R version: e.g., r441 for R 4.4.1. These are limited to what I'm able to pull from `rocker/r-ver`, etc.
 - Platform: Either amd64 or arm64 corresponding to the architecture (only these two are available in `rocker/r-ver`).
     - If none specified, it is cross-platform
 - Dates: corresponding to availability from Posit Package Manger for CRAN and Bioconductor packages. These lock in package versions to those that were available on a certain date.
