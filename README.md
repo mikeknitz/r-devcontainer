@@ -6,12 +6,13 @@ Documenting my Docker containers here for R development.
 
 ## Available images and usage
 
-- Images without `amd64` or `arm64` in the tag are cross platform for either architecture
+- Newer images are cross-platform and toward the top of this list
 - For Intel / AMD architecture, use `amd64`
 - For ARM or Apple Silicon architecture, use `arm64`
 
 [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images)
 
+- [knitz/r-devcontainer:r442-2024-11-04](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr442-2024-11-04)
 - [knitz/r-devcontainer:r441-2024-10-25](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-2024-10-25)
 - [knitz/r-devcontainer:r441-2024-09-23](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-2024-09-23)
 - [knitz/r-devcontainer:r441-amd64-2024-09-18](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images#knitzr-devcontainerr441-amd64-2024-09-18)
@@ -20,40 +21,30 @@ Documenting my Docker containers here for R development.
 
 <br>
 
-## Build documentation for R Containers
+## Builds and usage
 
-Files used to create each image are located in `builds/`.
+*Description here relevant to `knitz/r-devcontainer:r442-2024-11-04` and later builds*
 
-See `build-commands.md` within each build for specific commands run to create each image.
+Files used to create each image are located in `builds/`. See `build-commands.md` within each build for specific commands run to create each image.
 
-### Base image
+These R images are generally based on Rocker images: <https://rocker-project.org/images/versioned/r-ver.html> with Ubuntu with R already built from source for `linux/amd64` or `linux/arm64` architecture.
 
-These R images are generally based on `rocker/r-ver`: <https://rocker-project.org/images/versioned/r-ver.html> with Ubuntu (generally 22.04 "Jammy") with R already built from source for `linux/amd64` or `linux/arm64` architecture.
+The more recent images have RStudio already installed by pulling from `rocker/rstudio` images. These images allow you to run `/init` as root to start RStudio on port 8787 as user `rstudio` using the S6 init system and have it be password protected.
 
-### devcontainer "features"
+However, for contexts with limited permissions, I've symlinked a script `start-rstudio` to `/usr/local/bin` that manually calls `rserver` and uses the active user to start an RStudio instance without authentication (not secure when the RStudio port is open). See [Available Images](https://github.com/mikeknitz/r-devcontainer/wiki/Available-Images) for usage. Also see `builds/<specific-build>/build-scripts/bin-scripts/start-rstudio`. This script automatically creates/overwrites at `~/.rserver-data/` to provide a reliably writeable location for RStudio server to write to.
 
-I've made use of "devcontainer" features: <https://containers.dev/>. However, these are generally made to be installed on top of an existing image during container build. Instead, here, `build-scripts/pull-build-scripts.sh` is run before the `docker build` step to populate a `build-scripts/` with code from several features, essentially baking these features into the image, rather than their intended use installing on the fly. The `Dockerfile` will then copy these scripts into the image during the build step and use them to build each feature.
+Otherwise, call `radian` to start an R session. `~/.Rprofile`, `~/.lintr`, `~/.config/rstudio/rstudio-prefs.json`, and `.zshrc` have been configured for the default user `ubuntu`. See `builds/<specific-build>/build-scripts/dotfiles`. Date-specific repositories from Posit <https://packagemanager.posit.co/> are configured in `~/.Rprofile` for CRAN and Bioconductor repositories.
 
-Most of the devcontainer features will generally have a simple `install.sh` script, however, others might use special features in the Dev Container CLI (<https://github.com/devcontainers/cli>), for example scripts run at container creation time (onCreate) or after a feature has attached (postAttachCommand). Any functionality with these special parameters is instead adapted manually into the image itself or as parameters to a `docker run` command, etc. E.g., see `oncreate.sh` [here](https://github.com/rocker-org/devcontainer-features/blob/main/src/rstudio-server/oncreate.sh).
+Devcontainer features (<https://containers.dev/>), are manually implemented (pulled directly from repositories) to setup and install zsh, git, tmux, and neovim. See `builds/<specific-build>/build-scripts/pull-build-scripts.sh`. These are installed earlier in the Dockerfile as root.
 
-With an image that already has useful features built in (instead of installed on container creation time), there's no need to wait for the devcontainer CLI to install features, at the expense of some upfront configuration and image building. It's also useful for adapting docker images as Apptainer / Singularity images but retaining the functionality of the devcontainer features.
+I may have less documented / newer images / simple alias images that I'm working on in `knitz/r441:latest`, or `knitz/r442:latest`, etc. See info inside the running container at `/build-scripts/image-info.txt` if necessary. I overwrite these tags.
 
-This script pulls from the respective GitHub repositories, and the features are tied to specific commits so that they are robust to any feature updates.
+### Docker tag information
 
-### Additional setup and R packages
+- E.g., `r441` or `r442` for R version 4.4.1 or 4.4.2
+- `amd64` or `arm64` for specific architectures. If not present, it is cross-platform.
+- Dates: corresponding to the date-specific repositories used from Posit package manager, may not apply to R packages installed from Github or the default R packages in `/usr/local/lib/R/library`.
 
-- `.Rprofile` is added and configures date-specific repositories: <https://packagemanager.posit.co/>
-- `rstudio-prefs.json` is added for intial RStudio settings
-- `container-setup.sh` is called by the Dockerfile to install additional system dependencies and install R packages
-
-### Tags
-
-For Docker tags, I'm adding this info:
-
-- R version: e.g., r441 for R 4.4.1. These are limited to what I'm able to pull from `rocker/r-ver`, etc.
-- Platform: Either amd64 or arm64 corresponding to the architecture (only these two are available in `rocker/r-ver`).
-    - If none specified, it is cross-platform
-- Dates: corresponding to availability from Posit Package Manger for CRAN and Bioconductor packages. These lock in package versions to those that were available on a certain date.
 
 <br>
 
@@ -61,7 +52,7 @@ For Docker tags, I'm adding this info:
 
 ## TODO
 
-- [ ] Add `linux/arm64` architecture
+- [X] Add `linux/arm64` architecture
 - [ ] Add logs to note final container specification
 - [ ] Document dotfile integration / installation from host
 - [ ] Document usage with devcontainer CLI

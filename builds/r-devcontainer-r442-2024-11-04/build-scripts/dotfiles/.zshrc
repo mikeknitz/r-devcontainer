@@ -1,7 +1,14 @@
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="devcontainers"
+export ZSH="$HOME/.zsh"
+ZSH_THEME="mk"
 zstyle ':omz:update' mode disabled  # disable automatic updates
 plugins=(git)
+# https://stackoverflow.com/questions/47745184
+ZSH_CACHE="$HOME/.cache/zsh/"
+if [[ ! -d $ZSH_CACHE ]]; then
+  mkdir -p $ZSH_CACHE 
+fi
+ZSH_COMPDUMP="$ZSH_CACHE/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}"
+HISTFILE="$ZSH_CACHE/zsh_history"
 source $ZSH/oh-my-zsh.sh
 
 alias cl="clear"
@@ -31,8 +38,3 @@ alias glog="git log --pretty=oneline --graph"
 alias gr="git remote"
 alias grv="git remote -vv"
 unalias gg 2>/dev/null
-
-## Path
-HOMEBIN="${HOME}/bin"
-export PATH="${HOMEBIN}:${PATH}"
-export PATH="$PATH:${HOME}/.local/bin"

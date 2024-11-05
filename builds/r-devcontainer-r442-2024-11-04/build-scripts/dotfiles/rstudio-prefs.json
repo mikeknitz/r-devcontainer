@@ -6,5 +6,6 @@
   "posix_terminal_shell": "zsh",
   "load_workspace": false,
   "always_save_history": false,
-  "insert_native_pipe_operator": true
+  "insert_native_pipe_operator": true,
+  "show_hidden_files": true
 }

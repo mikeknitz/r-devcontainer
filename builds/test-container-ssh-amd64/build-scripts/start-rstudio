@@ -1,4 +1,0 @@
-#!/usr/bin/zsh
-set -e
-/bin/bash /usr/local/share/rocker-devcontainer-features/rstudio-server/scripts/oncreate.sh
-sudo su - ubuntu /usr/bin/zsh -c "rserver"
