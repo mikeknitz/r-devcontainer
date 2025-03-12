@@ -1,0 +1,80 @@
+#!/bin/bash
+
+set -eu
+
+PORT=${1:-8787}
+
+# This script starts rserver and uses a database located
+  # in user $HOME, so pretty much guaranteed to be writeable
+# Starts not daemonized, so kill terminal to stop server
+
+mkdir -p "${HOME}/.rserver-data"
+cat > "${HOME}/.rserver-data/dbconf.conf" <<EOF
+provider=sqlite
+directory=/home/${USER}/.rserver-data
+EOF
+
+if [ ! -f "${HOME}/.config/rstudio/rstudio-prefs.json" ]; then
+  if [ ! -d "${HOME}/.config/rstudio" ]; then
+    mkdir -p "${HOME}/.config/rstudio"
+  fi
+cat > "${HOME}/.config/rstudio/rstudio-prefs.json" <<EOF
+{
+  "show_doc_outline_rmd": true,
+  "save_workspace": "never",
+  "highlight_r_function_calls": true,
+  "syntax_color_console": true,
+  "load_workspace": false,
+  "always_save_history": false,
+  "insert_native_pipe_operator": true,
+  "show_hidden_files": true
+}
+EOF
+fi
+
+
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+# Code from rstudio-server devcontainer feature from rocker-org
+# https://github.com/rocker-org/devcontainer-features/blob/b5b3836edc1ee92062d33cee78a1616e890a3c8c/src/rstudio-server/oncreate.sh
+# Uses jq to set the option "initial_working_directory" to
+  # the directory in which this script is called
+
+
+set_rstudio_prefs() {
+    local cur_dir
+    local prefs_path
+
+    cur_dir="$(pwd)"
+    config_dir=~/.config/rstudio
+    prefs_path="${config_dir}/rstudio-prefs.json"
+
+    if [ ! -f "${prefs_path}" ]; then
+        mkdir -p "${config_dir}"
+        echo "Setting RStudio preferences..."
+        cat <<EOF >"${prefs_path}"
+{
+    "initial_working_directory": "${cur_dir}"
+}
+EOF
+    elif jq '.' "${prefs_path}" >/dev/null 2>&1; then
+        echo "Updating RStudio preferences..."
+        jq ".initial_working_directory = \"${cur_dir}\"" "${prefs_path}" >"${prefs_path}.tmp" && mv "${prefs_path}.tmp" "${prefs_path}"
+    else
+        echo "(!) '${prefs_path}' already exists and cannot be updated by the 'jq' command."
+        echo "    Please check the file and the 'jq' command."
+    fi
+}
+
+set_rstudio_prefs
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
+
+rserver \
+  --www-port "$PORT" \
+  --server-daemonize 0 \
+  --server-user="$USER" \
+  --database-config-file="/home/${USER}/.rserver-data/dbconf.conf" \
+  --server-data-dir="/home/${USER}/.rserver-data"

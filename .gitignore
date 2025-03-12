@@ -9,3 +9,4 @@
 **/build-scripts/quarto-cli/
 **/build-scripts/rstudio-server/
 **/build-scripts/tmux/
+**/build-scripts/cellranger-files
