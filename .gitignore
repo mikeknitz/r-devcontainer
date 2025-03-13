@@ -10,3 +10,4 @@
 **/build-scripts/rstudio-server/
 **/build-scripts/tmux/
 **/build-scripts/cellranger-files
+**/build-scripts/pulled-scripts/
