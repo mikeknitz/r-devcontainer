@@ -8,7 +8,7 @@ RUN useradd -s /bin/bash -m ubuntu \
 # Files are added incrementally in this Dockerfile
   # to preserve build layers for caching, etc.
 RUN mkdir /build-scripts
-RUN mkdir /build-scripts/pulled-scripts
+COPY build-scripts/pulled-scripts /build-scripts/pulled-scripts
 
 # Install devcontainer features as root
 USER root
@@ -19,42 +19,37 @@ USER root
 
 # common-utils
   # which includes a zsh install
-COPY build-scripts/pulled-scripts/common-utils /build-scripts/pulled-scripts/common-utils
-WORKDIR /build-scripts/pulled-scripts/common-utils
-RUN INSTALLZSH="true" \
-    CONFIGUREZSHASDEFAULTSHELL="true" \
-    INSTALLOHMYZSH="true" \
-    INSTALLOHMYZSHCONFIG="true" \
-    UPGRADEPACKAGES="true" \
-    USERNAME="ubuntu" \
-    USERUID="automatic" \
-    USERGID="automatic" \
-    NONFREEPACKAGES="true" \
-    /bin/bash main.sh
+RUN cd /build-scripts/pulled-scripts/common-utils && \
+  INSTALLZSH="true" \
+  CONFIGUREZSHASDEFAULTSHELL="true" \
+  INSTALLOHMYZSH="true" \
+  INSTALLOHMYZSHCONFIG="true" \
+  UPGRADEPACKAGES="true" \
+  USERNAME="ubuntu" \
+  USERUID="automatic" \
+  USERGID="automatic" \
+  NONFREEPACKAGES="true" \
+  /bin/bash main.sh
 
 # git
-COPY build-scripts/pulled-scripts/git /build-scripts/pulled-scripts/git
-WORKDIR /build-scripts/pulled-scripts/git
-RUN VERSION="latest" \
-    PPA="true" \
-    /bin/bash install.sh
+RUN cd build-scripts/pulled-scripts/git && \
+  VERSION="latest" \
+  PPA="true" \
+  /bin/bash install.sh
 
 # tmux
-COPY build-scripts/pulled-scripts/tmux /build-scripts/pulled-scripts/tmux
-WORKDIR /build-scripts/pulled-scripts/tmux
-RUN VERSION="latest" \
+RUN cd /build-scripts/pulled-scripts/tmux && \
+  VERSION="latest" \
   /bin/bash install.sh
 
 # neovim
-COPY build-scripts/pulled-scripts/neovim /build-scripts/pulled-scripts/neovim
-WORKDIR /build-scripts/pulled-scripts/neovim
-RUN VERSION="nightly" \
+RUN cd /build-scripts/pulled-scripts/neovim && \
+  VERSION="nightly" \
   /bin/bash install.sh
 
 # neofetch
-COPY build-scripts/pulled-scripts/neofetch /build-scripts/pulled-scripts/neofetch
-WORKDIR /build-scripts/pulled-scripts/neofetch
-RUN /bin/bash install.sh
+RUN cd /build-scripts/pulled-scripts/neofetch && \
+  /bin/bash install.sh
 
 # ==============================================================================
 # Other misc setup
@@ -157,6 +152,23 @@ RUN sudo fc-cache -f
 # ==============================================================================
 
 # Tidyverse, devtools, languageserver compilation
+  # libcurl4-openssl-dev
+  # libssl-dev
+  # libxml2-dev
+  # libfontconfig1-dev
+  # libharfbuzz-dev
+  # libfribidi-dev
+  # libfreetype6-dev
+  # libpng-dev
+  # libtiff5-dev
+  # libjpeg-dev
+  # libgit2-dev
+# libcairo2-dev httpgd
+# libglpk-dev Seurat
+# libhdf5-dev HDF5 for scRNA objects and loupeR package
+# imagemagick, libmagick++-dev, for R magick, ggkegg, officer packages
+# libgsl-dev For DirichletMultinomial bioc package for TFBSTools bioc dep of Azimuth
+
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
   libcurl4-openssl-dev \
   libssl-dev           \
@@ -168,27 +180,12 @@ RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recomm
   libpng-dev           \
   libtiff5-dev         \
   libjpeg-dev          \
-  libgit2-dev
-
-# Httpgd
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
-  libcairo2-dev
-
-# Seurat
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
-  libglpk-dev
-
-# HDF5 for h5 single cell objects and loupeR package
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
-  libhdf5-dev
-
-# Magick, for magick, ggkegg, officer packages
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
-  imagemagick \
-  libmagick++-dev
-
-# For DirichletMultinomial bioc package for TFBSTools bioc dep of Azimuth
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install -y --no-install-recommends \
+  libgit2-dev          \
+  libcairo2-dev        \
+  libglpk-dev          \
+  libhdf5-dev          \
+  imagemagick          \
+  libmagick++-dev      \
   libgsl-dev
 
 # Clean up
@@ -210,9 +207,9 @@ RUN sudo apt-get autoremove -y && \
     # commands below that install from github and are set to install based
     # on a specific commit SHA
 
-RUN R -q -e 'install.packages("tidyverse")'
-RUN R -q -e 'install.packages("devtools")'
-RUN R -q -e 'install.packages("languageserver")'
+RUN R -q -e 'install.packages(c("tidyverse", "devtools", "languageserver", "extrafont"))'
+# Configure fonts that were installed above for ttf-mscorefonts-installer
+RUN R -q -e 'extrafont::font_import(prompt = FALSE); extrafont::loadfonts()'
 
 # httpgd from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("nx10/httpgd@7181a6fb9c863b710ebcf718f0585070aab5c194")'
@@ -220,35 +217,19 @@ RUN R -q -e 'devtools::install_github("nx10/httpgd@7181a6fb9c863b710ebcf718f0585
 # ManuelHentschel/vscDebugger from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("ManuelHentschel/vscDebugger@83e91154629de8cb81d043dea24fd78f77c6108c")'
 
-# Configure fonts that were installed above
-RUN R -q -e 'install.packages("extrafont")'
-RUN R -q -e 'extrafont::font_import(prompt = FALSE); extrafont::loadfonts()'
-
-RUN R -q -e 'install.packages("Cairo")'
-
-# Recommended for vsn or impute I think
-RUN R -q -e 'install.packages("hexbin")'
+# hexbin: recommend for vsn or impute packages I think
+RUN R -q -e 'install.packages(c("Cairo", "hexbin"))'
 
 RUN R -q -e 'install.packages("BiocManager")'
-RUN R -q -e 'BiocManager::install(version = "3.20",       update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("SummarizedExperiment", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("AnnotationDbi",        update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("org.Hs.eg.db",         update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("org.Mm.eg.db",         update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("DESeq2",               update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("clusterProfiler",      update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("ComplexHeatmap",       update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("limma",                update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("PhosR",                update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("vsn",                  update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("impute",               update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install(version = "3.20", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install(c("SummarizedExperiment", "AnnotationDbi", "org.Hs.eg.db", "org.Mm.eg.db", "DESeq2", "clusterProfiler", "ComplexHeatmap", "limma", "PhosR", "vsn", "impute"), update = TRUE, ask = FALSE, checkBuilt = TRUE)'
 
-# Relies on Bioconductor pacakge impute I think
+# Relies on Bioconductor pacakge impute maybe
 RUN R -q -e 'install.packages("imputeLCMD")'
 
 RUN R -q -e 'install.packages("Hmisc")'
 
-# Source install seems to work better
+# Source install seems to work better for magick
 RUN R -q -e 'install.packages("magick", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
 
 RUN R -q -e 'BiocManager::install("ggkegg", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
@@ -267,49 +248,21 @@ RUN R -q -e 'devtools::install_github("satijalab/seurat-data@3e51f44303069b64f5d
 # immunogenics/presto from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("immunogenomics/presto@7636b3d0465c468c35853f82f1717d3a64b3c8f6")'
 
-RUN R -q -e 'install.packages("clustree")'
-RUN R -q -e 'install.packages("DT")'
-RUN R -q -e 'install.packages("ggh4x")'
-RUN R -q -e 'install.packages("ggsci")'
-RUN R -q -e 'install.packages("ggpubr")'
-RUN R -q -e 'install.packages("ggplotify")'
-RUN R -q -e 'install.packages("HGNChelper")'
-RUN R -q -e 'install.packages("openxlsx")'
-RUN R -q -e 'install.packages("ggnewscale")'
-RUN R -q -e 'install.packages("ggbeeswarm")'
-RUN R -q -e 'install.packages("dendsort")'
-RUN R -q -e 'install.packages("msigdbr")'
-RUN R -q -e 'install.packages("hdf5r")'
+RUN R -q -e 'install.packages(c("clustree", "DT", "ggh4x", "ggsci", "ggpubr", "ggplotify", "HGNChelper", "openxlsx", "ggnewscale", "ggbeeswarm", "dendsort", "msigdbr", "hdf5r"))'
 
 # 10XGenomics/loupeR from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("10XGenomics/loupeR@fb9c6d1cddeeb6760d77c0c836a114f0e15c271a")'
 
-RUN R -q -e 'install.packages("officer")'
-RUN R -q -e 'install.packages("rsvg")'
+RUN R -q -e 'install.packages(c("officer", "rsvg", "harmony", "sctransform"))'
 
-RUN R -q -e 'install.packages("harmony")'
-RUN R -q -e 'install.packages("sctransform")'
-RUN R -q -e 'BiocManager::install("glmGamPoi", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("biomaRt", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("SingleR", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("celldex", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("scRNAseq", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("edgeR", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("scuttle", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("scran", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("GSVA", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("KEGGgraph", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'BiocManager::install("flowCore", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install(c("glmGamPoi", "biomaRt", "SingleR", "celldex", "scRNAseq", "edgeR", "scuttle", "scran", "GSVA", "KEGGgraph", "flowCore"), update = TRUE, ask = FALSE, checkBuilt = TRUE)'
 
 # ParkerICI/premessa from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("ParkerICI/premessa@68b42bb984637d0f3ad6a0ecc83e9278994afc85")'
 
 RUN R -q -e 'install.packages("webshot", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
-RUN R -q -e 'install.packages("optparse")'
-RUN R -q -e 'install.packages("factoextra")'
-RUN R -q -e 'install.packages("ggdist")'
-RUN R -q -e 'install.packages("writexl")'
-RUN R -q -e 'install.packages("survminer")'
+
+RUN R -q -e 'install.packages(c("optparse", "factoextra", "ggdist", "writexl", "survminer"))'
 
 # ==============================================================================
 # ==============================================================================
