@@ -1,9 +1,14 @@
-# Bioconductor mirror
-options(BioC_mirror = "https://packagemanager.posit.co/bioconductor/2024-11-04")
-options(BIOCONDUCTOR_CONFIG_FILE = "https://packagemanager.posit.co/bioconductor/2024-11-04/config.yaml")
+# Mirrors
+options(
+  repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/2025-03-11"),
+  BioC_mirror = "https://packagemanager.posit.co/bioconductor/__linux__/noble/2025-03-11",
+  BIOCONDUCTOR_CONFIG_FILE = "https://packagemanager.posit.co/bioconductor/2025-03-11/config.yaml"
+)
+Sys.setenv("R_BIOC_VERSION" = "3.20")
 
-# CRAN mirror
-options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/2024-11-04"))
+# If need source installs use:
+  # https://packagemanager.posit.co/cran/2025-03-11
+  # https://packagemanager.posit.co/bioconductor/2025-03-11
 
 # For use with VSCode
 # Helpful info / inspiration: https://renkun.me/2020/04/14/writing-r-in-vscode-working-with-multiple-r-sessions/

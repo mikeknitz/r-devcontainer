@@ -1,7 +1,8 @@
 FROM rocker/rstudio:4.4.2
 
-# Add user "ubuntu" to staff group
-RUN usermod -a -G staff ubuntu
+# Create a non-root user "ubuntu" and add to staff group
+RUN useradd -s /bin/bash -m ubuntu \
+  && usermod -a -G staff ubuntu
 
 # Directory to store scripts and files for the container
 # Files are added incrementally in this Dockerfile
@@ -213,8 +214,11 @@ RUN R -q -e 'install.packages("tidyverse")'
 RUN R -q -e 'install.packages("devtools")'
 RUN R -q -e 'install.packages("languageserver")'
 
-# httpgd from github, latest commit as of 2024-09-18
-RUN R -q -e 'devtools::install_github("nx10/httpgd@b0a5ec38638ca69e3adbc7b24d815757e5f74817")'
+# httpgd from github, latest commit as of 2025-03-13
+RUN R -q -e 'devtools::install_github("nx10/httpgd@7181a6fb9c863b710ebcf718f0585070aab5c194")'
+
+# ManuelHentschel/vscDebugger from github, latest commit as of 2025-03-13
+RUN R -q -e 'devtools::install_github("ManuelHentschel/vscDebugger@83e91154629de8cb81d043dea24fd78f77c6108c")'
 
 # Configure fonts that were installed above
 RUN R -q -e 'install.packages("extrafont")'
@@ -245,12 +249,22 @@ RUN R -q -e 'install.packages("imputeLCMD")'
 RUN R -q -e 'install.packages("Hmisc")'
 
 # Source install seems to work better
-RUN R -q -e 'install.packages("magick", repos = "https://packagemanager.posit.co/cran/2024-11-04", type = "source")'
+RUN R -q -e 'install.packages("magick", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
 
 RUN R -q -e 'BiocManager::install("ggkegg", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
-RUN R -q -e 'install.packages("Seurat")'
 
-# immunogenics/presto from github, latest commit as of 2024-03-18
+RUN R -q -e 'install.packages("Seurat")'
+# Force source install of Seurat (may have been built with binary above already)
+# and avoid "built under a different version" warnings when loading package
+RUN R -q -e 'remove.packages("Seurat")'
+RUN R -q -e 'install.packages("Seurat", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
+RUN R -q -e 'remove.packages("SeuratObject")'
+RUN R -q -e 'install.packages("SeuratObject", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
+
+# SeuratData from github, latest commit as of 2025-03-13
+RUN R -q -e 'devtools::install_github("satijalab/seurat-data@3e51f44303069b64f5dc4d68e6a3d4a343f55c39")'
+
+# immunogenics/presto from github, latest commit as of 2025-03-13
 RUN R -q -e 'devtools::install_github("immunogenomics/presto@7636b3d0465c468c35853f82f1717d3a64b3c8f6")'
 
 RUN R -q -e 'install.packages("clustree")'
@@ -267,22 +281,35 @@ RUN R -q -e 'install.packages("dendsort")'
 RUN R -q -e 'install.packages("msigdbr")'
 RUN R -q -e 'install.packages("hdf5r")'
 
-# 10XGenomics/loupeR from github, latest commit as of 2024-10-29 I think
-RUN R -q -e 'devtools::install_github("10XGenomics/loupeR@a169417e7a0d59ae7ebba042a4f100de8efb8101")'
-
-# Force source install of Seurat (may have been built with binary above already)
-# and avoid "built under a different version" warnings when loading package
-RUN R -q -e 'remove.packages("Seurat")'
-RUN R -q -e 'install.packages("Seurat", repos = "https://packagemanager.posit.co/cran/2024-11-04", type = "source")'
-RUN R -q -e 'remove.packages("SeuratObject")'
-RUN R -q -e 'install.packages("SeuratObject", repos = "https://packagemanager.posit.co/cran/2024-11-04", type = "source")'
+# 10XGenomics/loupeR from github, latest commit as of 2025-03-13
+RUN R -q -e 'devtools::install_github("10XGenomics/loupeR@fb9c6d1cddeeb6760d77c0c836a114f0e15c271a")'
 
 RUN R -q -e 'install.packages("officer")'
 RUN R -q -e 'install.packages("rsvg")'
 
 RUN R -q -e 'install.packages("harmony")'
 RUN R -q -e 'install.packages("sctransform")'
-RUN R -q -e 'BiocManager::install("glmGamPoi")'
+RUN R -q -e 'BiocManager::install("glmGamPoi", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("biomaRt", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("SingleR", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("celldex", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("scRNAseq", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("edgeR", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("scuttle", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("scran", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("GSVA", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("KEGGgraph", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+RUN R -q -e 'BiocManager::install("flowCore", update = TRUE, ask = FALSE, checkBuilt = TRUE)'
+
+# ParkerICI/premessa from github, latest commit as of 2025-03-13
+RUN R -q -e 'devtools::install_github("ParkerICI/premessa@68b42bb984637d0f3ad6a0ecc83e9278994afc85")'
+
+RUN R -q -e 'install.packages("webshot", repos = "https://packagemanager.posit.co/cran/2025-03-11", type = "source")'
+RUN R -q -e 'install.packages("optparse")'
+RUN R -q -e 'install.packages("factoextra")'
+RUN R -q -e 'install.packages("ggdist")'
+RUN R -q -e 'install.packages("writexl")'
+RUN R -q -e 'install.packages("survminer")'
 
 # ==============================================================================
 # ==============================================================================
